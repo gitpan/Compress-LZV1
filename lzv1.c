@@ -4,6 +4,7 @@
 **
 **	Written by Hermann Vogt
 **
+**		v 0.5 -- 00/04/10	fix unaligned access (Marc)
 **		v 0.4 -- 00/03/25	adapted for PApp by Marc Lehmann <pcg@goof.com>
 **		v 0.3 -- 94/03/08	aCembler version of rLZV built in.
 **		v 0.2 -- 94/03/04	Changes for usage with DouBle 0.2 built in.
@@ -33,12 +34,29 @@
 **
 ***********************************************************************/
 
-#include "lzv1.h"
+#define HSIZE	0x4000
+#define HMASK	0x3fff
+#define HSHIFT	5
 
-#undef ONLY_64K /* 64k encoder is faster */
+#define	MLL	32		/*        Maximum len of chain of literals        */
+#define	MML	(8+256)		/*        Maximum len of match                    */
+#define	MOFF	8191		/*        Maximum offset                          */
+#define	HSIZ	16384		/*        Size of Hashtable                       */
 
-int 
-LZV1_compress (uch * in, uch * out, ush * heap, int len, int out_len)
+/* ugly type names */
+
+typedef	unsigned char	uch;
+typedef	unsigned short	ush;
+typedef	unsigned int	uit;
+
+#undef ONLY_64K /* 64k-max encoder is faster */
+                /* but only veeeery slightly */
+
+/* unconditionally aligning does not cost much much, so do it if unsure */
+#define align_ushort !defined(__i386)
+
+static int 
+wLZV1 (uch * in, uch * out, ush * heap, int len, int out_len)
 {
   uit hval, op, ip, l_len, m_pos, m_off, m_len, maxlen;
   ush *lzv1_htab = heap;
@@ -64,11 +82,17 @@ LZV1_compress (uch * in, uch * out, ush * heap, int len, int out_len)
 	m_pos -= 0x10000;
 #endif
 
-      if (m_pos < ip &&
-	  in[m_pos] == in[ip] &&
-	  (m_off = ip - m_pos - 1) <= MOFF &&
-	  ip + 4 < len &&
-	  *(ush *) (in + m_pos + 1) == *(ush *) (in + ip + 1))
+      if (m_pos < ip
+	  && in[m_pos    ] == in[ip    ]
+	  && (m_off = ip - m_pos - 1) <= MOFF
+	  && ip + 4 < len
+#if align_ushort
+          && in[m_pos + 1] == in[ip + 1]
+          && in[m_pos + 2] == in[ip + 2]
+#else
+	  && *(ush *) (in + m_pos + 1) == *(ush *) (in + ip + 1)
+#endif
+         )
 	{
 	  /*      We have found a match   */
 	  uit look = len - ip - 2;
@@ -161,8 +185,8 @@ LZV1_compress (uch * in, uch * out, ush * heap, int len, int out_len)
   return op;
 }
 
-int 
-LZV1_decompress (uch const *const in, uch * const out, int ilen, int len)
+static int 
+rLZV1 (uch const *const in, uch * const out, int ilen, int len)
 {
   register uit tbuf, c_len;
   uch *const out_end = out + len;

@@ -1,9 +1,13 @@
 Revision history for Perl extension Compress::LZV1
 
+0.03  Mon Apr 10 09:15:14 CEST 2000
+        - fixed alignment problem. since the hit is not too much, just
+          avoid it if !x86 && !gcc ;)
+
 0.02  Fri Apr  7 08:04:06 CEST 2000
-	- replaced license by the GPL, since the original code is GPL'd
+	- replaced license by the GPL, since the original code is GPL'd.
         - this version actually comes with the compression code ;)
 
 0.01  Fri Apr  7 01:01:11 CEST 2000
-	- original version; created by cp -rp
+	- original version; created by cp -rp.
 

@@ -2,7 +2,6 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include "lzv1.h"
 #include "lzv1.c"
 
 MODULE = Compress::LZV1   PACKAGE = Compress::LZV1
@@ -25,7 +24,7 @@ compress(data)
               dst = (unsigned char *)SvPV_nolen (RETVAL);
 
               /* compress  */
-              csize = LZV1_compress ((uch *)src, (uch *)(dst + 4), heap, usize, usize - 5);
+              csize = wLZV1 ((uch *)src, (uch *)(dst + 4), heap, usize, usize - 5);
               if (csize)
                 {
                   dst[0] = 'L'; /* compressed flag */
@@ -77,7 +76,7 @@ decompress(data)
                   SvPOK_only (RETVAL);
                   dst = SvPV_nolen (RETVAL);
 
-                  if (LZV1_decompress ((uch *)(src + 4), (uch *)dst, csize - 4, usize) != usize)
+                  if (rLZV1 ((uch *)(src + 4), (uch *)dst, csize - 4, usize) != usize)
                     croak ("LZV1: compressed data corrupted (2)");
                   break;
                 default:
