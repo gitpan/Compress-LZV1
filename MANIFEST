@@ -7,3 +7,5 @@ t/00_load.t
 t/01_run.t
 LZV1.pm
 LZV1.xs
+lzv1.h
+lzv1.c

@@ -1,6 +1,6 @@
 =head1 NAME
 
-Compress::LZV1 - extremely fast Lev-Zimpel-Vogt compression.
+Compress::LZV1 - extremely leight-weight Lev-Zimpel-Vogt compression
 
 =head1 SYNOPSIS
 
@@ -72,6 +72,10 @@ problems. The hashing-method has been stolen from Jean-loup Gailly's
 
 =back
 
+=head1 BUGS
+
+It seems that the c-code has _big_ alignment problems :(
+
 =cut
 
 package Compress::LZV1;
@@ -79,7 +83,7 @@ package Compress::LZV1;
 require Exporter;
 require DynaLoader;
 
-$VERSION = 0.01;
+$VERSION = 0.02;
 @ISA = qw/Exporter DynaLoader/;
 @EXPORT = qw(compress decompress);
 bootstrap Compress::LZV1 $VERSION;

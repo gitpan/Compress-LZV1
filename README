@@ -1,5 +1,5 @@
 NAME
-    Compress::LZV1 - extremely fast Lev-Zimpel-Vogt compression.
+    Compress::LZV1 - extremely leight-weight Lev-Zimpel-Vogt compression
 
 SYNOPSIS
        use Compress::LZV1;
@@ -63,4 +63,7 @@ AUTHOR
         from both, I hope there will be no patent problems. The
         hashing-method has been stolen from Jean-loup Gailly's (patent free)
         gzip.
+
+BUGS
+    It seems that the c-code has _big_ alignment problems :(
 
