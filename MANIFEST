@@ -1,0 +1,9 @@
+README
+Changes
+MANIFEST
+COPYING
+Makefile.PL
+t/00_load.t
+t/01_run.t
+LZV1.pm
+LZV1.xs
