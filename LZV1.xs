@@ -2,7 +2,16 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include "lzv1.c"
+/* try to be compatible with older perls */
+/* SvPV_nolen() macro first defined in 5.005_55 */
+/* this is slow, not threadsafe, but works */
+#include "patchlevel.h"
+#if (PATCHLEVEL == 4) || ((PATCHLEVEL == 5) && (SUBVERSION < 55))
+static STRLEN nolen_na;
+# define SvPV_nolen(sv) SvPV ((sv), nolen_na)
+#endif
+
+#include "lzv1/lzv1.c"
 
 MODULE = Compress::LZV1   PACKAGE = Compress::LZV1
 
